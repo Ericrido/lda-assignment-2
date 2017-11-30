@@ -27,7 +27,7 @@ proc gplot data=LDA.ACU2;
 plot frequency*time / haxis=axis1 vaxis=axis2;
 symbol c=red i=std1mjt w=1 mode=include;
 axis1 label=(h=2 "Time (months)") value=(h=1.5) order=(0 to 12 by 1) minor=none;
-axis2 label=(h=2 A=90 "Severity") value=(h=1.5) order=(10 to 35)
+axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(10 to 35)
 minor=none;
 title; 
 run;quit;
@@ -37,15 +37,13 @@ proc gplot data=LDA.ACU2;
 plot frquency*log_time / haxis=axis1 vaxis=axis2;
 symbol c=red i=std1mjt w=1 mode=include;
 axis1 label=(h=2 "log(1+Time)") value=(h=1.5) order=(0 to 3) minor=none;
-axis2 label=(h=2 A=90 "Severity") value=(h=1.5) order=(10 to 35)
+axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(10 to 35)
 minor=none;
 title; 
 run;quit;
 
 
 
-
-/*1.2.c. MEANS for each neuro Combined */
                                                                                                                                         
 /* Calculate the mean and standard error for each X */                                                                                  
 proc means data=LDA.ACU2 noprint;                                                                                                           
@@ -54,8 +52,7 @@ proc means data=LDA.ACU2 noprint;
    output out=meansout(drop=_type_ _freq_) mean=mean stderr=stderr;                                                                     
 run;                                                                                                                                    
                                                                                                                                         
-/* Reshape the data to contain three Y values for */                                                                                    
-/* each X for use with the HILOC interpolation.   */                                                                                    
+                                                                                 
 data reshape(keep=group time frequency mean);                                                                                             
    set meansout;                                                                                                                        
    by group time;                                                                                                                    
