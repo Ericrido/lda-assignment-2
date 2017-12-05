@@ -5,8 +5,14 @@ data lda.acu2;
 set lda.aculda2;
 drop severity;
 ltime= log(time + 1);
-timeclass=time
+timeclass=time;
 run;
+
+proc format ;
+value group 0="Basic medication"
+			1="Acupuncture";
+run;
+
 
 /*Target variable is Poisson, don't know if it makes sense to consider Gamma */
 
@@ -23,21 +29,22 @@ RUN;
 
 
 /*without modifying x axis*/
+
 proc gplot data=LDA.ACU2;
 plot frequency*time / haxis=axis1 vaxis=axis2;
 symbol c=red i=std1mjt w=1 mode=include;
 axis1 label=(h=2 "Time (months)") value=(h=1.5) order=(0 to 12 by 1) minor=none;
-axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(10 to 35)
+axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(0 to 20)
 minor=none;
 title; 
 run;quit;
 
 /*Transformation: log(time+1)*/
 proc gplot data=LDA.ACU2;
-plot frquency*log_time / haxis=axis1 vaxis=axis2;
+plot frequency*ltime / haxis=axis1 vaxis=axis2;
 symbol c=red i=std1mjt w=1 mode=include;
 axis1 label=(h=2 "log(1+Time)") value=(h=1.5) order=(0 to 3) minor=none;
-axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(10 to 35)
+axis2 label=(h=2 A=90 "Frequency") value=(h=1.5) order=(0 to 20)
 minor=none;
 title; 
 run;quit;
@@ -45,7 +52,10 @@ run;quit;
 
 
                                                                                                                                         
-/* Calculate the mean and standard error for each X */                                                                                  
+/* Calculate the mean and standard error for each X */      
+proc sort data=LDA.ACU2;
+by group time;
+ 
 proc means data=LDA.ACU2 noprint;                                                                                                           
    by group time;                                                                                                                    
    var Frequency;                                                                                                                            
@@ -76,7 +86,7 @@ run;
                                                                                                                                         
 /* Define the axis characteristics */                                                                                                   
    axis1 offset=(0,0) minor=none value=(t=1 ' ' t=7 ' ');                                                                                                       
-   axis2 label=(angle=90) order=(10 to 35 by 5) minor=(n=1);                                                                                                                   
+   axis2 label=(angle=90) order=(0 to 20 by 5) minor=(n=1);                                                                                                                   
                                                                                                                                         
 /* Define the symbol characteristics */                                                                                                 
    symbol1 interpol=hiloctj color=vibg line=1;                                                                                          
@@ -90,7 +100,9 @@ run;
                                                                                                                                         
 /* Plot the error bars using the HILOCTJ interpolation */                                                                               
 /* and overlay symbols at the means. */                                                                                                 
-proc gplot data=reshape;                                                                                                                
+proc gplot data=reshape; 
+title "Means of frequency by group";
+format group group.; 
    plot frequency*time=group / haxis=axis1 vaxis=axis2 legend=legend1;                                                                    
    plot2 mean*time=group / vaxis=axis2 noaxis nolegend;
    
@@ -134,7 +146,3 @@ proc corr data=LDA.wide plots (MAXPOINTS=NONE)=matrix (histogram);
 var time0 time3 time12;
 run;
 ods graphics off;
-
-
-
-
