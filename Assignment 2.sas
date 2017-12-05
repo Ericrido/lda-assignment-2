@@ -10,7 +10,7 @@ run;
 
 proc format ;
 value group 0="Basic medication"
-			1="Acupuncture";
+	    1="Acupuncture";
 run;
 
 
