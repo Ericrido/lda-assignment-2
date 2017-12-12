@@ -10,6 +10,7 @@ prev1 = lag(frequency);
 prev2= 0;
 if first.id then prev1 = 0;
 if last.id then prev2 = lag2(frequency);
+if frequency=0 then frequency=".";
 run;
 
 /* TRANSITIONAL MODEL */
@@ -60,11 +61,21 @@ run;
 
 /* GENERALIZED LINEAR MIXED MODELS */
 
-proc glimmix data=lda.acu2 method=gauss(q=50);
+/* PQL for initial values, then adaptive quadrature */
+
+proc glimmix data=lda.acu2 method=rspl;
 class id;
 model frequency = age chronicity group time group*time
 / dist=poisson solution;
 random intercept / subject=id;
 run;
 
-/* inclusion of random slopes? */
+
+
+proc nlmixed data=lda.acu2 ;
+parms beta0=2.77 beta1=-0.003 beta2=-0.003 beta3=-0.07 beta4=-0.01 beta5=-0.01;
+teta=beta0 + b + beta1*age + beta2*chronicity + beta3*group + beta4*time + beta5*group*time;
+lambda=exp(teta);
+model frequency ~ poisson(lambda);
+random b ~ normal(0,sigma**2) subject=id;
+run;
