@@ -65,7 +65,7 @@ run;
 
 proc glimmix data=lda.acu2 method=rspl;
 class id;
-model frequency = age chronicity group time group*time
+model frequency = age chronicity time age*time chronicity*time group*time
 / dist=poisson solution;
 random intercept / subject=id;
 run;
@@ -73,8 +73,8 @@ run;
 
 
 proc nlmixed data=lda.acu2 qpoints=30;
-parms beta0=2.77 beta1=-0.003 beta2=-0.003 beta3=-0.07 beta4=-0.01 beta5=-0.01;
-teta=beta0 + b + beta1*age + beta2*chronicity + beta3*group + beta4*time + beta5*group*time;
+parms beta0=2.79 beta1=-0.004 beta2=0.003 beta3=-0.03 beta4=0.0002 beta5=0.0001 beta6=-0.01;
+teta=beta0 + b + beta1*age + beta2*chronicity + beta3*time + beta4*age*time + beta5*chronicity*time + beta6*group*time;
 lambda=exp(teta);
 model frequency ~ poisson(lambda);
 random b ~ normal(0,sigma**2) subject=id;
