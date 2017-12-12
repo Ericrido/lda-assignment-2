@@ -72,7 +72,7 @@ run;
 
 
 
-proc nlmixed data=lda.acu2 ;
+proc nlmixed data=lda.acu2 qpoints=30;
 parms beta0=2.77 beta1=-0.003 beta2=-0.003 beta3=-0.07 beta4=-0.01 beta5=-0.01;
 teta=beta0 + b + beta1*age + beta2*chronicity + beta3*group + beta4*time + beta5*group*time;
 lambda=exp(teta);
